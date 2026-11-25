@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Cart | SneakerVerse</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="main-header">
+    <div class="logo">SneakerVerse</div>
+    <nav class="navbar">
+      <a href="index.html">Home</a>
+      <a href="cart.html">Cart 🛒</a>
+    </nav>
+  </header>
+
+  <section class="featured">
+    <h2>Your Cart</h2>
+    <div id="cart-items" class="product-grid"></div>
+    <div class="price-summary">
+      <p>Subtotal: $<span id="subtotal">0.00</span></p>
+      <p>Tax (13%): $<span id="tax">0.00</span></p>
+      <h3>Total: $<span id="total">0.00</span></h3>
+    </div>
+    <a href="payment.html" class="checkout-btn">Proceed to Payment</a>
+  </section>
+
+  <script>
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+    function showCartItems() {
+      const container = document.getElementById("cart-items");
+      const subtotalElem = document.getElementById("subtotal");
+      const taxElem = document.getElementById("tax");
+      const totalElem = document.getElementById("total");
+
+      let subtotal = 0;
+
+      container.innerHTML = cart.map((item, index) => {
+        const price = parseFloat(item.price);
+        subtotal += price;
+        return `
+          <div class="product-card">
+            <div class="cart-image-wrapper">
+  <img src="${item.image || 'placeholder.jpg'}" alt="${item.name}" />
+</div>
+            <h4>${item.name}</h4>
+            <p>Size: ${item.size || "N/A"}</p>
+            <p>Price: $${price.toFixed(2)}</p>
+            <button onclick="removeItem(${index})">Remove</button>
+          </div>
+        `;
+      }).join('');
+
+      const tax = +(subtotal * 0.13).toFixed(2);
+      const total = +(subtotal + tax).toFixed(2);
+
+      subtotalElem.textContent = subtotal.toFixed(2);
+      taxElem.textContent = tax.toFixed(2);
+      totalElem.textContent = total.toFixed(2);
+    }
+
+    function removeItem(index) {
+      cart.splice(index, 1);
+      localStorage.setItem("cart", JSON.stringify(cart));
+      showCartItems();
+    }
+
+    window.onload = showCartItems;
+  </script>
+</body>
+</html>
